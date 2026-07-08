@@ -1,0 +1,70 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    @apply min-h-screen text-electric-navy font-body-md selection:bg-sky-blue selection:text-white bg-white;
+  }
+}
+
+@layer utilities {
+  .notebook-grid {
+    background-image: 
+        linear-gradient(rgba(34, 72, 112, 0.05) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(34, 72, 112, 0.05) 1px, transparent 1px);
+    background-size: 20px 20px;
+    background-color: #ffffff;
+  }
+
+  .sticky-note {
+    box-shadow: 4px 4px 0px 0px #224870;
+    border: 2px solid #224870;
+  }
+
+  .sketch-border {
+    border: 2px solid #224870;
+    border-radius: 255px 15px 225px 15px/15px 225px 15px 255px;
+  }
+
+  .sticker-rotate-1 { transform: rotate(1deg); }
+  .sticker-rotate-neg-1 { transform: rotate(-1deg); }
+  .sticker-rotate-2 { transform: rotate(2deg); }
+  .sticker-rotate-neg-2 { transform: rotate(-2.5deg); }
+
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+  .no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  
+  .tape-effect {
+    position: relative;
+  }
+  
+  .tape-effect::before {
+    content: '';
+    position: absolute;
+    top: -10px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 60px;
+    height: 20px;
+    background: rgba(0, 168, 232, 0.3);
+    border-left: 1px dashed rgba(34, 72, 112, 0.5);
+    border-right: 1px dashed rgba(34, 72, 112, 0.5);
+    z-index: 20;
+  }
+  
+  @keyframes floating {
+    0% { transform: translateY(0px) rotate(-0.5deg); }
+    50% { transform: translateY(-5px) rotate(0.5deg); }
+    100% { transform: translateY(0px) rotate(-0.5deg); }
+  }
+  
+  .animate-float { 
+    animation: floating 4s ease-in-out infinite; 
+  }
+}

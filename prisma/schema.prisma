@@ -1,0 +1,169 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model user_miyu {
+  id        String   @id @default(cuid())
+  username  String   @unique
+  email     String   @unique
+  password  String
+  avatar    String?
+  bio       String?
+  name      String?
+  pronouns  String?
+  igLink    String?
+  xLink     String?
+  gender    String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  posts               post_miyu[]
+  postLikes           post_like_miyu[]
+  vanGoghPosts        van_gogh_post_miyu[]
+  vanGoghLikes        van_gogh_like_miyu[]
+  confessions         confession_miyu[]
+  confessionLikes     confession_like_miyu[]
+  confessionSupports  confession_support_miyu[]
+  polls               poll_miyu[]
+  votes               vote_miyu[]
+  notifications       notification_miyu[]
+}
+
+model post_miyu {
+  id        String   @id @default(cuid())
+  imageUrl  String
+  caption   String
+  likes     Int      @default(0)
+  isArchived Boolean @default(false)
+  createdAt DateTime @default(now())
+  
+  authorId  String?
+  author    user_miyu? @relation(fields: [authorId], references: [id])
+  
+  likedBy   post_like_miyu[]
+}
+
+model post_like_miyu {
+  id        String   @id @default(cuid())
+  userId    String
+  postId    String
+  
+  user      user_miyu @relation(fields: [userId], references: [id])
+  post      post_miyu @relation(fields: [postId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, postId])
+}
+
+model van_gogh_post_miyu {
+  id        String   @id @default(cuid())
+  imageUrl  String
+  caption   String?
+  likes     Int      @default(0)
+  isArchived Boolean @default(false)
+  createdAt DateTime @default(now())
+  
+  authorId  String
+  author    user_miyu @relation(fields: [authorId], references: [id])
+  
+  likedBy   van_gogh_like_miyu[]
+}
+
+model van_gogh_like_miyu {
+  id        String   @id @default(cuid())
+  userId    String
+  postId    String
+  
+  user      user_miyu @relation(fields: [userId], references: [id])
+  post      van_gogh_post_miyu @relation(fields: [postId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, postId])
+}
+
+model confession_miyu {
+  id        String   @id @default(cuid())
+  text      String
+  likes     Int      @default(0)
+  supports  Int      @default(0)
+  createdAt DateTime @default(now())
+  
+  authorId  String
+  author    user_miyu @relation(fields: [authorId], references: [id])
+  
+  likedBy      confession_like_miyu[]
+  supportedBy  confession_support_miyu[]
+}
+
+model confession_like_miyu {
+  id           String   @id @default(cuid())
+  userId       String
+  confessionId String
+  
+  user         user_miyu @relation(fields: [userId], references: [id])
+  confession   confession_miyu @relation(fields: [confessionId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, confessionId])
+}
+
+model confession_support_miyu {
+  id           String   @id @default(cuid())
+  userId       String
+  confessionId String
+  
+  user         user_miyu @relation(fields: [userId], references: [id])
+  confession   confession_miyu @relation(fields: [confessionId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, confessionId])
+}
+
+model poll_miyu {
+  id        String   @id @default(cuid())
+  title     String
+  isClosed  Boolean  @default(false)
+  createdAt DateTime @default(now())
+  
+  authorId  String
+  author    user_miyu @relation(fields: [authorId], references: [id])
+  
+  options   poll_option_miyu[]
+}
+
+model poll_option_miyu {
+  id        String   @id @default(cuid())
+  text      String
+  votes     Int      @default(0)
+  
+  pollId    String
+  poll      poll_miyu @relation(fields: [pollId], references: [id], onDelete: Cascade)
+  
+  voters    vote_miyu[]
+}
+
+model vote_miyu {
+  id        String   @id @default(cuid())
+  
+  userId    String
+  user      user_miyu @relation(fields: [userId], references: [id])
+  
+  optionId  String
+  option    poll_option_miyu @relation(fields: [optionId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, optionId])
+}
+
+model notification_miyu {
+  id        String   @id @default(cuid())
+  userId    String   // The recipient of the notification (the post author)
+  actorId   String   // The user who performed the action (the liker)
+  type      String   // 'LIKE_POST', 'LIKE_VANGOGH', 'LIKE_CONFESSION'
+  postId    String?  // Optional ID of the related post
+  read      Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  user      user_miyu @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
