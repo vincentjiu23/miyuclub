@@ -18,7 +18,6 @@ type Post = {
 export default function FeedClient({ posts }: { posts: Post[] }) {
   const router = useRouter();
   const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [isModerator, setIsModerator] = useState(false);
   const [showModal, setShowModal] = useState(false);
   
   // Local state for optimistic likes - store both count and if current user liked it
@@ -36,14 +35,6 @@ export default function FeedClient({ posts }: { posts: Post[] }) {
     const checkUser = () => {
       const user = localStorage.getItem("miyu_user");
       setIsLoggedIn(!!user);
-      // For MVP testing, if user is 'admin', they are moderator
-      if (user === "admin") {
-        setIsModerator(true);
-      } else if (user) {
-        setIsModerator(false);
-      } else {
-        setIsModerator(false);
-      }
     };
     
     checkUser();
@@ -87,25 +78,6 @@ export default function FeedClient({ posts }: { posts: Post[] }) {
     }
   };
 
-  const toggleRole = () => {
-    if (!isLoggedIn) {
-      localStorage.setItem("miyu_user", "true");
-      setIsLoggedIn(true);
-      setIsModerator(false);
-      alert("Switched to Normal User");
-    } else if (isLoggedIn && !isModerator) {
-      localStorage.setItem("miyu_user", "admin");
-      setIsModerator(true);
-      alert("Switched to Moderator");
-    } else {
-      localStorage.removeItem("miyu_user");
-      setIsLoggedIn(false);
-      setIsModerator(false);
-      alert("Switched to Guest");
-    }
-    window.dispatchEvent(new Event("storage"));
-    router.refresh();
-  };
 
   const [activeTab, setActiveTab] = useState<'feed' | 'vangogh'>('feed');
   const [vanGoghPosts, setVanGoghPosts] = useState<any[]>([]);
@@ -166,13 +138,6 @@ export default function FeedClient({ posts }: { posts: Post[] }) {
 
   return (
     <>
-      {/* Secret Dev Switch Role Button */}
-      <button 
-        onClick={toggleRole}
-        className="fixed top-4 right-20 z-50 bg-black text-white text-[10px] px-2 py-1 font-mono rounded opacity-50 hover:opacity-100 transition-opacity"
-      >
-        Dev: Role ({!isLoggedIn ? 'Guest' : isModerator ? 'Mod' : 'User'})
-      </button>
 
       {!isLoggedIn && (
         <div className="bg-sunny-yellow p-4 border-2 border-electric-navy sticky-note sticker-rotate-1 mb-8 flex flex-col md:flex-row justify-between items-center gap-4">
@@ -324,8 +289,8 @@ export default function FeedClient({ posts }: { posts: Post[] }) {
         )}
       </div>
 
-      {/* FAB (Moderator Only) */}
-      {isLoggedIn && isModerator && (
+      {/* FAB (Logged-in Users) */}
+      {isLoggedIn && (
         <button 
           onClick={() => setShowModal(true)}
           className="fixed bottom-24 right-6 w-14 h-14 bg-sky-blue text-white border-2 border-electric-navy rounded-full flex items-center justify-center sticky-note active:translate-y-1 active:shadow-none transition-all z-40"

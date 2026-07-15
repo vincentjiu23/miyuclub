@@ -25,6 +25,10 @@ export async function loginAction(formData: FormData) {
       return { success: false, error: "Invalid password" };
     }
 
+    if (user.suspended) {
+      return { success: false, error: "Your account has been suspended by an administrator." };
+    }
+
     // Set HTTP-only cookie
     cookies().set("miyu_session", user.id, {
       httpOnly: true,

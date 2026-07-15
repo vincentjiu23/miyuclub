@@ -3,7 +3,7 @@
 import prisma from "@/lib/prisma";
 import { cookies } from "next/headers";
 import { revalidatePath } from "next/cache";
-import { createNotification } from "./notificationActions";
+import { createNotification, broadcastNotificationToFollowers } from "./notificationActions";
 
 // --- CONFESSIONS ---
 
@@ -35,6 +35,9 @@ export async function createConfession(text: string) {
         authorId: session
       }
     });
+
+    await broadcastNotificationToFollowers(session, 'NEW_CONFESSION', confession.id);
+
     return { success: true, confession };
   } catch (error) {
     console.error("Error creating confession:", error);
@@ -148,6 +151,9 @@ export async function createPoll(title: string, options: string[]) {
         author: { select: { username: true } }
       }
     });
+
+    await broadcastNotificationToFollowers(session, 'NEW_POLL', poll.id);
+
     return { success: true, poll };
   } catch (error) {
     console.error("Error creating poll:", error);

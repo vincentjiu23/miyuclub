@@ -12,6 +12,8 @@ model user_miyu {
   username  String   @unique
   email     String   @unique
   password  String
+  role      String   @default("user") // "user" or "admin"
+  suspended Boolean  @default(false)
   avatar    String?
   bio       String?
   name      String?
@@ -33,6 +35,15 @@ model user_miyu {
   polls               poll_miyu[]
   votes               vote_miyu[]
   notifications       notification_miyu[]
+
+  // Follow Relations
+  followers           follow_miyu[] @relation("UserFollowers")
+  following           follow_miyu[] @relation("UserFollowing")
+
+  // Chat Relations
+  chatRoomsAsP1       chat_room_miyu[] @relation("ChatParticipant1")
+  chatRoomsAsP2       chat_room_miyu[] @relation("ChatParticipant2")
+  chatMessages        chat_message_miyu[]
 }
 
 model post_miyu {
@@ -166,4 +177,44 @@ model notification_miyu {
   createdAt DateTime @default(now())
 
   user      user_miyu @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model follow_miyu {
+  id          String   @id @default(cuid())
+  followerId  String
+  followingId String
+  createdAt   DateTime @default(now())
+
+  follower    user_miyu @relation("UserFollowing", fields: [followerId], references: [id], onDelete: Cascade)
+  following   user_miyu @relation("UserFollowers", fields: [followingId], references: [id], onDelete: Cascade)
+
+  @@unique([followerId, followingId])
+}
+
+model chat_room_miyu {
+  id             String   @id @default(cuid())
+  participant1Id String
+  participant2Id String
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  participant1   user_miyu @relation("ChatParticipant1", fields: [participant1Id], references: [id], onDelete: Cascade)
+  participant2   user_miyu @relation("ChatParticipant2", fields: [participant2Id], references: [id], onDelete: Cascade)
+
+  messages       chat_message_miyu[]
+
+  // Ensure unique room per pair regardless of order
+  @@unique([participant1Id, participant2Id])
+}
+
+model chat_message_miyu {
+  id        String   @id @default(cuid())
+  roomId    String
+  senderId  String
+  content   String
+  isRead    Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  room      chat_room_miyu @relation(fields: [roomId], references: [id], onDelete: Cascade)
+  sender    user_miyu      @relation(fields: [senderId], references: [id], onDelete: Cascade)
 }

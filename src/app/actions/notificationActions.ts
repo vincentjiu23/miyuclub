@@ -20,6 +20,31 @@ export async function createNotification(userId: string, actorId: string, type: 
     console.error("Error creating notification:", error);
   }
 }
+export async function broadcastNotificationToFollowers(actorId: string, type: string, postId?: string) {
+  try {
+    // 1. Fetch all followers of the actor
+    const followers = await prisma.follow_miyu.findMany({
+      where: { followingId: actorId },
+      select: { followerId: true }
+    });
+
+    if (followers.length === 0) return;
+
+    // 2. Create a notification for each follower
+    const notifications = followers.map(f => ({
+      userId: f.followerId,
+      actorId,
+      type,
+      postId
+    }));
+
+    await prisma.notification_miyu.createMany({
+      data: notifications
+    });
+  } catch (error) {
+    console.error("Error broadcasting notifications:", error);
+  }
+}
 
 export async function getNotifications() {
   const session = cookies().get("miyu_session")?.value;

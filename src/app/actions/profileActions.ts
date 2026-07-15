@@ -77,3 +77,37 @@ export async function updateProfile(formData: FormData) {
     return { success: false, error: error.message };
   }
 }
+
+export async function getProfileByUsername(username: string) {
+  try {
+    const user = await prisma.user_miyu.findUnique({
+      where: { username }
+    });
+    return user;
+  } catch (error) {
+    return null;
+  }
+}
+
+export async function getPublicUserPosts(userId: string) {
+  try {
+    const [feedPosts, vanGoghPosts, confessions] = await Promise.all([
+      prisma.post_miyu.findMany({
+        where: { authorId: userId, isArchived: false },
+        orderBy: { createdAt: 'desc' }
+      }),
+      prisma.van_gogh_post_miyu.findMany({
+        where: { authorId: userId, isArchived: false },
+        orderBy: { createdAt: 'desc' }
+      }),
+      prisma.confession_miyu.findMany({
+        where: { authorId: userId },
+        orderBy: { createdAt: 'desc' }
+      })
+    ]);
+    
+    return { success: true, feedPosts, vanGoghPosts, confessions };
+  } catch (error) {
+    return { success: false, error: "Failed to fetch user posts" };
+  }
+}

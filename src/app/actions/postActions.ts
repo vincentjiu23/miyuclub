@@ -5,7 +5,7 @@ import { join } from "path";
 import prisma from "@/lib/prisma";
 import { revalidatePath } from "next/cache";
 import { cookies } from "next/headers";
-import { createNotification } from "./notificationActions";
+import { createNotification, broadcastNotificationToFollowers } from "./notificationActions";
 
 export async function createPost(formData: FormData) {
   try {
@@ -32,14 +32,27 @@ export async function createPost(formData: FormData) {
 
     await writeFile(filepath, buffer);
 
-    // Save to database
-    await prisma.post_miyu.create({
+    const session = cookies().get("miyu_session")?.value;
+
+    if (session) {
+      const user = await prisma.user_miyu.findUnique({ where: { id: session } });
+      if (user?.suspended) {
+         return { success: false, error: "Action blocked: account is suspended." };
+      }
+    }
+
+    const newPost = await prisma.post_miyu.create({
       data: {
         imageUrl: `/uploads/${filename}`,
         caption: caption,
-        likes: 0
+        likes: 0,
+        authorId: session || undefined
       }
     });
+
+    if (session) {
+      await broadcastNotificationToFollowers(session, 'NEW_POST', newPost.id);
+    }
 
     revalidatePath("/");
     return { success: true };

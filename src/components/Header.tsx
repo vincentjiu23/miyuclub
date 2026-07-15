@@ -62,8 +62,7 @@ export default function Header() {
     window.dispatchEvent(new Event("storage"));
     setIsLoggedIn(false);
     setShowDropdown(false);
-    router.push("/auth/login");
-    router.refresh(); 
+    window.location.href = "/auth/login";
   };
 
   const handleProfileClick = () => {
@@ -120,25 +119,49 @@ export default function Header() {
                   <div className="p-4 text-center text-sm font-handwriting text-electric-navy/60">No notifications yet.</div>
                 ) : (
                   notifications.map((notif, idx) => (
-                    <div key={notif.id || idx} className={`p-3 border-b border-electric-navy/10 hover:bg-sky-blue/5 flex flex-col gap-1 ${notif.read ? 'opacity-70' : 'bg-sunny-yellow/10'}`}>
+                    <Link href={
+                      notif.type === 'CHAT' ? `/chat/${notif.postId || ''}` : 
+                      notif.type === 'FOLLOW' ? `/profile/${notif.actor?.username}` : 
+                      notif.type === 'NEW_CONFESSION' ? `/confessions` : 
+                      notif.type === 'NEW_POLL' ? `/club` : 
+                      `/`
+                    } key={notif.id || idx} className={`p-3 border-b border-electric-navy/10 hover:bg-sky-blue/5 flex flex-col gap-1 ${notif.read ? 'opacity-70' : 'bg-sunny-yellow/10'} block`}>
                       <span className="text-xs font-label-bold text-sky-blue">
                         {notif.type === 'LIKE_POST' && 'FEED LIKE'}
                         {notif.type === 'LIKE_VANGOGH' && 'VAN GOGH LIKE'}
                         {notif.type === 'LIKE_CONFESSION' && 'CONFESSION LIKE'}
+                        {notif.type === 'FOLLOW' && 'NEW FOLLOWER'}
+                        {notif.type === 'CHAT' && 'NEW MESSAGE'}
+                        {notif.type === 'NEW_POST' && 'NEW POST'}
+                        {notif.type === 'NEW_CONFESSION' && 'NEW CONFESSION'}
+                        {notif.type === 'NEW_POLL' && 'NEW POLL'}
                       </span>
                       <p className="text-sm font-handwriting text-electric-navy leading-tight">
                         <span className="font-bold">{notif.actor?.username || 'Someone'}</span>
                         {notif.type === 'LIKE_POST' && ` liked your feed post.`}
                         {notif.type === 'LIKE_VANGOGH' && ` liked your Van Gogh artwork.`}
                         {notif.type === 'LIKE_CONFESSION' && ` liked your confession.`}
+                        {notif.type === 'FOLLOW' && ` started following you.`}
+                        {notif.type === 'CHAT' && ` sent you a message.`}
+                        {notif.type === 'NEW_POST' && ` published a new post.`}
+                        {notif.type === 'NEW_CONFESSION' && ` dropped a new confession.`}
+                        {notif.type === 'NEW_POLL' && ` created a new poll.`}
                       </p>
                       <span className="text-[10px] text-electric-navy/50">{new Date(notif.createdAt).toLocaleDateString()} {new Date(notif.createdAt).toLocaleTimeString()}</span>
-                    </div>
+                    </Link>
                   ))
                 )}
               </div>
             )}
           </div>
+
+          <Link href="/explore" className="material-symbols-outlined text-electric-navy hover:text-sky-blue transition-colors p-1">
+            explore
+          </Link>
+
+          <Link href="/chat" className="material-symbols-outlined text-electric-navy hover:text-sky-blue transition-colors p-1">
+            chat
+          </Link>
 
           <div className="relative" ref={dropdownRef}>
             <button 
