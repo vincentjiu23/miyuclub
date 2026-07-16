@@ -19,7 +19,7 @@ export default function LoginPage() {
     const result = await loginAction(formData);
 
     if (result.success) {
-      localStorage.setItem("miyu_user", result.userId);
+      localStorage.setItem("miyu_user", result.userId || "");
       window.dispatchEvent(new Event("storage"));
       router.push("/");
       router.refresh();
