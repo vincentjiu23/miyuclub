@@ -58,7 +58,7 @@ export async function getNotifications() {
     });
     
     // Also fetch the actors' details so we can show their name/username
-    const actorIds = [...new Set(notifications.map((n: any) => n.actorId))];
+    const actorIds = Array.from(new Set(notifications.map((n: any) => n.actorId)));
     const actors = await prisma.user_miyu.findMany({
       where: { id: { in: actorIds } },
       select: { id: true, username: true, name: true }
