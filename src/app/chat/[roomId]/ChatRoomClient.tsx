@@ -20,7 +20,8 @@ const GIFS = [
 
 const isOnlyEmojis = (str: string) => {
   if (!str.trim()) return false;
-  return /^[\p{Extended_Pictographic}\s]+$/u.test(str);
+  const regex = new RegExp("^[\\p{Extended_Pictographic}\\s]+$", "u");
+  return regex.test(str);
 };
 
 export default function ChatRoomClient({ roomId, currentUserId, otherUsername }: { roomId: string, currentUserId: string, otherUsername: string }) {
