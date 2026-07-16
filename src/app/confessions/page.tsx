@@ -105,7 +105,7 @@ export default function ConfessionsPage() {
       const res = await createConfession(newConfession);
       if (res.success && res.confession) {
         setConfessions(prev => [{
-          ...res.confession,
+          ...(res.confession as any),
           isLiked: false,
           isSupported: false
         } as Confession, ...prev]);
@@ -175,8 +175,8 @@ export default function ConfessionsPage() {
       const res = await createPoll(pollTitle, validOptions);
       if (res.success && res.poll) {
         setPolls(prev => [{
-          ...res.poll,
-          options: res.poll.options.map((o: any) => ({ ...o, votes: 0 })),
+          ...(res.poll as any),
+          options: (res.poll as any).options.map((o: any) => ({ ...o, votes: 0 })),
           totalViews: 0
         } as Poll, ...prev]);
         setPollTitle("");
