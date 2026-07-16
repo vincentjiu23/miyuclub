@@ -268,7 +268,7 @@ export default function CreatePostModal({ onClose }: { onClose: () => void }) {
                    </button>
                  ))}
                </div>
-             </div>>
+             </div>
              <button onClick={handleCancel} className="mt-4 text-electric-navy font-label-bold hover:underline">
                CANCEL
              </button>
