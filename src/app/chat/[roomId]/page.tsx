@@ -9,13 +9,18 @@ export default async function ChatRoomPage({ params }: { params: { roomId: strin
   const session = cookies().get("miyu_session")?.value;
   if (!session) redirect("/auth/login");
 
-  const room = await prisma.chat_room_miyu.findUnique({
-    where: { id: params.roomId },
-    include: {
-      participant1: { select: { id: true, username: true } },
-      participant2: { select: { id: true, username: true } }
-    }
-  });
+  let room;
+  try {
+    room = await prisma.chat_room_miyu.findUnique({
+      where: { id: params.roomId },
+      include: {
+        participant1: { select: { id: true, username: true } },
+        participant2: { select: { id: true, username: true } }
+      }
+    });
+  } catch (e) {
+    redirect("/chat");
+  }
 
   if (!room) {
     redirect("/chat");

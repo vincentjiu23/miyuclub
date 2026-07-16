@@ -8,16 +8,20 @@ export const dynamic = "force-dynamic";
 export default async function FeedLandingPage() {
   const session = cookies().get("miyu_session")?.value;
   
-  // Fetch posts from database
-  const posts = await prisma.post_miyu.findMany({
-    orderBy: { createdAt: 'desc' },
-    include: {
-      likedBy: session ? {
-        where: { userId: session },
-        select: { userId: true }
-      } : false
-    }
-  });
+  let posts: any[] = [];
+  try {
+    posts = await prisma.post_miyu.findMany({
+      orderBy: { createdAt: 'desc' },
+      include: {
+        likedBy: session ? {
+          where: { userId: session },
+          select: { userId: true }
+        } : false
+      }
+    });
+  } catch (e) {
+    // Database not available during build
+  }
 
   return (
     <main className="pb-32 max-w-screen-md mx-auto px-margin-mobile pt-6 relative">
