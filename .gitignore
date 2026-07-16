@@ -44,3 +44,6 @@ next-env.d.ts
 # uploads / temp media
 /public/uploads/
 .tempmediaStorage/
+
+# Prisma custom generated client
+/src/generated/
