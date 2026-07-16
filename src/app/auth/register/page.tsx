@@ -19,7 +19,7 @@ export default function RegisterPage() {
     const result = await registerAction(formData);
 
     if (result.success) {
-      localStorage.setItem("miyu_user", result.userId);
+      localStorage.setItem("miyu_user", result.userId || "");
       window.dispatchEvent(new Event("storage"));
       router.push("/");
       router.refresh();
