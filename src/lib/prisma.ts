@@ -1,22 +1,15 @@
 import { PrismaClient } from '@prisma/client'
 
-declare const globalThis: {
-  prismaGlobal: PrismaClient | undefined;
-} & typeof global;
-
-function getPrismaClient(): PrismaClient {
-  if (!globalThis.prismaGlobal) {
-    globalThis.prismaGlobal = new PrismaClient();
-  }
-  return globalThis.prismaGlobal;
+const prismaClientSingleton = () => {
+  return new PrismaClient()
 }
 
-// Use a Proxy to lazily initialize PrismaClient only when a property is accessed
-const prisma = new Proxy({} as PrismaClient, {
-  get(_target, prop) {
-    const client = getPrismaClient();
-    return (client as any)[prop];
-  }
-});
+declare const globalThis: {
+  prismaGlobal: ReturnType<typeof prismaClientSingleton>;
+} & typeof global;
 
-export default prisma;
+const prisma = globalThis.prismaGlobal ?? prismaClientSingleton()
+
+export default prisma
+
+if (process.env.NODE_ENV !== 'production') globalThis.prismaGlobal = prisma
