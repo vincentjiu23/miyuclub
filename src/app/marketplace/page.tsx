@@ -7,20 +7,20 @@ export default function MarketplacePage() {
   return (
     <main className="pb-32">
       {/* Marketplace Hero Section */}
-      <section className="relative px-margin-mobile md:px-margin-desktop py-12">
-        <div className="relative z-10 flex flex-col items-start gap-6">
-          <div className="bg-sky-blue text-white px-6 py-2 sticky-note sticker-rotate-neg-2">
-            <h2 className="font-handwriting text-headline-lg uppercase">Super Market</h2>
-          </div>
-          <div className="max-w-xl bg-white p-6 sticky-note sticker-rotate-1">
-            <p className="font-handwriting text-lg leading-relaxed text-electric-navy">
-              Authentic MIYU CLUB gear for the digital underground. Limited drops, vinyl stickers, and heavy-duty apparel inspired by the street art movement. Printed on high-quality stock.
-            </p>
-          </div>
-        </div>
+      <div 
+        className="w-full relative cursor-pointer" 
+        onClick={() => document.getElementById('catalog')?.scrollIntoView({ behavior: 'smooth' })}
+      >
+        <img 
+          src="/images/asset/Website.png" 
+          alt="Miyu Club Marketplace" 
+          className="w-full h-auto object-cover"
+        />
+      </div>
 
+      <section id="catalog" className="relative px-margin-mobile md:px-margin-desktop py-8 md:py-12 scroll-mt-20">
         {/* Categories Chips */}
-        <div className="flex flex-wrap gap-4 mt-12 overflow-x-auto pb-4 no-scrollbar">
+        <div className="flex flex-wrap gap-4 overflow-x-auto pb-4 no-scrollbar">
           <button className="whitespace-nowrap px-6 py-2 bg-sunny-yellow text-electric-navy font-handwriting text-lg sticky-note hover:-translate-y-1 transition-transform">ALL GEAR</button>
           <button className="whitespace-nowrap px-6 py-2 bg-white text-electric-navy font-handwriting text-lg sticky-note hover:bg-sky-blue hover:text-white transition-colors sticker-rotate-1">APPAREL</button>
           <button className="whitespace-nowrap px-6 py-2 bg-white text-electric-navy font-handwriting text-lg sticky-note hover:bg-sky-blue hover:text-white transition-colors sticker-rotate-neg-1">ACCESSORIES</button>

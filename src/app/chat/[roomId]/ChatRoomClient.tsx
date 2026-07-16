@@ -88,7 +88,7 @@ export default function ChatRoomClient({ roomId, currentUserId, otherUsername }:
   const renderMessageContent = (content: string) => {
     if (content.startsWith("[STICKER]")) {
       const filename = content.replace("[STICKER]", "");
-      return <img src={`/images/sticker/${filename}`} alt="sticker" className="w-48 h-48 object-contain filter drop-shadow-xl animate-[bounce_3s_ease-in-out_infinite]" style={{animation: 'bounce 3s infinite'}} />;
+      return <img src={`/images/sticker/${filename}`} alt="sticker" className="w-48 h-48 object-contain filter drop-shadow-xl" style={{animation: 'bounce 3s infinite'}} />;
     }
     if (content.startsWith("[GIF]")) {
       const url = content.replace("[GIF]", "");
